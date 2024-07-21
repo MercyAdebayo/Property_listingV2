@@ -3,6 +3,33 @@
 ## Executive Summary
 This project aims to develop a comprehensive web application that enables property sellers to list properties for sale effectively. Utilizing Angular for the frontend and .NET Core Web API for the backend, this application will provide a robust, user-friendly platform for real estate transactions. The project addresses the need for a modern, efficient, and accessible online property listing service.
 
+## Restoring the WEBAPI Project
+
+### Steps to Restore the WEBAPI Project
+1. **Clone the WEBAPI Project:**
+    ```bash
+    git clone <repository-url>
+    ```
+2. **Open the Solution File:**
+   Open the solution file in your preferred IDE (e.g., Visual Studio).
+
+3. **Change Your Connection String:**
+   Update the connection string in the `appsettings.json` file to point to your database.
+
+4. **Update the Database:**
+    ```bash
+    dotnet ef database update
+    ```
+    This command will apply any pending migrations to the database.
+
+5. **Run the Application:**
+   Once the database is updated successfully, run the application.
+
+6. **View the Swagger Documentation:**
+   Navigate to `/index.html` in your browser to view the Swagger documentation for the API.
+
+By following these steps, you will be able to restore and run the WEBAPI project locally.
+
 ## House Listing Git Collaboration Policy
 
 ### Branch Naming Convention
