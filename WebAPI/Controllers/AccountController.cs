@@ -71,6 +71,10 @@ namespace WebAPI.Controllers
         private string CreateJWT(User user)
         {
             var secretKey = configuration.GetSection("AppSettings:Key").Value;
+            if (string.IsNullOrEmpty(secretKey))
+            {
+                throw new InvalidOperationException("Secret key must not be null or empty.");
+            }
             var key = new SymmetricSecurityKey(Encoding.UTF8
                 .GetBytes(secretKey));
 
