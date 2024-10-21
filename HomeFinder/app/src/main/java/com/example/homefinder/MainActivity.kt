@@ -1,3 +1,5 @@
+package com.example.homefinder
+
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -10,6 +12,7 @@ import com.example.homefinder.databinding.ActivityMainBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+//import com.example
 
 class MainActivity : AppCompatActivity() {
 

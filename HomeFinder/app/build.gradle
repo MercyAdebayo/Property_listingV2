@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.example.homefinder'
-    compileSdk 34
+    compileSdk 34  // Updated to 34
 
     defaultConfig {
         applicationId "com.example.homefinder"
         minSdk 29
-        targetSdk 34
+        targetSdk 34  // Updated to 34
         versionCode 1
         versionName "1.0"
 
@@ -30,9 +30,11 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    viewBinding {         enabled = true     }
-
+    viewBinding {
+        enabled = true
+    }
 }
+
 
 dependencies {
 
