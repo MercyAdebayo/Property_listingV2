@@ -1,0 +1,100 @@
+
+
+<androidx.constraintlayout.widget.ConstraintLayout
+
+xmlns:android="http://schemas.android.com/apk/res/android"
+
+xmlns:app="http://schemas.android.com/apk/res-auto"
+
+android:layout_width="match_parent"
+
+android:layout_height="match_parent"
+
+android:padding="16dp">
+
+<!-- Welcome Message -->
+
+    <!-- Login Button -->
+
+    <TextView
+
+        android:id="@+id/welcome_message"
+
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="216dp"
+
+        android:text="Welcome to HomeFinder"
+
+        android:textSize="24sp"
+
+        android:textStyle="bold"
+
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+
+    android:id="@+id/button_login"
+
+    android:layout_width="wrap_content"
+
+    android:layout_height="wrap_content"
+
+    android:text="Log In"
+
+    app:layout_constraintTop_toBottomOf="@+id/welcome_message"
+
+    app:layout_constraintStart_toStartOf="parent"
+
+    app:layout_constraintEnd_toEndOf="parent"
+
+    android:layout_marginTop="16dp"/>
+
+<!-- Sign Up Button -->
+<Button
+
+    android:id="@+id/button_signup"
+
+    android:layout_width="wrap_content"
+
+    android:layout_height="wrap_content"
+
+    android:text="Sign Up"
+
+    app:layout_constraintTop_toBottomOf="@+id/button_login"
+
+    app:layout_constraintStart_toStartOf="parent"
+
+    app:layout_constraintEnd_toEndOf="parent"
+
+    android:layout_marginTop="16dp"/>
+
+<!-- Skip Button -->
+<TextView
+
+    android:id="@+id/button_skip"
+
+    android:layout_width="wrap_content"
+
+    android:layout_height="wrap_content"
+
+    android:text="Skip for Now"
+
+    android:textSize="14sp"
+
+    android:textColor="@android:color/holo_blue_dark"
+
+    app:layout_constraintTop_toBottomOf="@+id/button_signup"
+
+    app:layout_constraintStart_toStartOf="parent"
+
+    app:layout_constraintEnd_toEndOf="parent"
+
+    android:layout_marginTop="16dp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
+
