@@ -11,7 +11,7 @@ interface AuthService {
 
     fun loginUser(@Body loginReqDto: LoginReqDto): Call<LoginResDto>
 
-    @POST("auth/registration/")
+    @POST("auth/signup/")
 
     fun signupUser(@Body signupRequest: SignupRequest): Call<SignupResponse>
 
