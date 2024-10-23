@@ -46,27 +46,47 @@ namespace WebAPI.Controllers
             return Ok(loginRes);
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(LoginReqDto loginReq)
-        {
-            ApiError apiError = new ApiError();
 
-            if(loginReq.UserName.IsEmpty() || loginReq.Password.IsEmpty()) {
-                    apiError.ErrorCode=BadRequest().StatusCode;
-                    apiError.ErrorMessage="User name or password can not be blank";                    
-                    return BadRequest(apiError);
-            }                    
+    [HttpPost("register")]
+    public async Task<IActionResult> Register(LoginReqDto loginReq)
+    {
+        ApiError apiError = new ApiError();
 
-            if (await uow.UserRepository.UserAlreadyExists(loginReq.UserName)) {
-                apiError.ErrorCode=BadRequest().StatusCode;
-                apiError.ErrorMessage="User already exists, please try different user name";
-                return BadRequest(apiError);
-            }                
-
-            uow.UserRepository.Register(loginReq.UserName, loginReq.Password);
-            await uow.SaveAsync();
-            return StatusCode(201);
+        // Validate that username and password are not blank
+        if(string.IsNullOrWhiteSpace(loginReq.UserName) || string.IsNullOrWhiteSpace(loginReq.Password)) {
+            apiError.ErrorCode = BadRequest().StatusCode;
+            apiError.ErrorMessage = "Username or password cannot be blank";                    
+            return BadRequest(apiError);
         }
+
+        // Check if the user already exists
+        if (await uow.UserRepository.UserAlreadyExists(loginReq.UserName)) {
+            apiError.ErrorCode = BadRequest().StatusCode;
+            apiError.ErrorMessage = "User already exists, please try a different username";
+            return BadRequest(apiError);
+        }                
+
+        // Register the new user
+        uow.UserRepository.Register(loginReq.UserName, loginReq.Password);
+        await uow.SaveAsync();
+
+        // Authenticate the newly registered user and return a JWT token
+        var user = await uow.UserRepository.Authenticate(loginReq.UserName, loginReq.Password);
+        if (user == null) {
+            apiError.ErrorCode = Unauthorized().StatusCode;
+            apiError.ErrorMessage = "There was an error during registration. Please try again.";
+            return Unauthorized(apiError);
+        }
+
+        // Create JWT token for the newly registered user
+        var loginRes = new LoginResDto();
+        loginRes.UserName = user.Username;
+        loginRes.Token = CreateJWT(user);
+
+        
+        return Ok(loginRes);
+    }
+
 
         private string CreateJWT(User user)
         {
