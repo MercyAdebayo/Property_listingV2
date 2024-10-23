@@ -35,7 +35,14 @@ object RetrofitInstance {
 
         retrofit.create(PropertyApiService::class.java)
 
-    }
 
+    }
+    // Provide the Notification ApiService
+
+    val notificationApiService: NotificationApiService by lazy {
+
+        retrofit.create(NotificationApiService::class.java)
+
+    }
 }
 

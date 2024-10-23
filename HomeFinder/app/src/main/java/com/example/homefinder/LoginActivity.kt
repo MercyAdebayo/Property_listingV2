@@ -1,6 +1,5 @@
 package com.example.homefinder
 
-
 import android.content.Intent
 
 import android.os.Bundle
@@ -29,15 +28,17 @@ class LoginActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
+        // Handle login button click
+
         binding.loginButton.setOnClickListener {
 
-            val username = binding.inputUsername.text.toString().trim() // Username input
+            val username = binding.inputUsername.text.toString().trim()
 
             val password = binding.inputPassword.text.toString().trim()
 
             if (username.isNotEmpty() && password.isNotEmpty()) {
 
-                loginUser(username, password)
+                loginUser(username, password) // Perform login
 
             } else {
 
@@ -47,11 +48,27 @@ class LoginActivity : AppCompatActivity() {
 
         }
 
+        // Handle Register text click
+
+        binding.textRegister.setOnClickListener {
+
+            // Redirect the user to SignupActivity
+
+            val intent = Intent(this, SignupActivity::class.java)
+
+            startActivity(intent)
+
+        }
+
     }
+
+    // Function to handle the login logic
 
     private fun loginUser(username: String, password: String) {
 
-        val loginReqDto = LoginReqDto(username, password) // Use LoginReqDto here
+        val loginReqDto = LoginReqDto(username, password)
+
+        // Make the login request using Retrofit
 
         RetrofitInstance.authService.loginUser(loginReqDto).enqueue(object : Callback<LoginResDto> {
 
@@ -63,7 +80,7 @@ class LoginActivity : AppCompatActivity() {
 
                     loginResponse?.let {
 
-                        // Save token to SharedPreferences for future authenticated requests
+                        // Save the token in SharedPreferences
 
                         val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
 
@@ -73,15 +90,17 @@ class LoginActivity : AppCompatActivity() {
 
                         editor.apply()
 
-                        // Navigate to the main screen
+                        // Navigate to the MainActivity after successful login
 
                         startActivity(Intent(this@LoginActivity, MainActivity::class.java))
 
-                        finish()  // End login activity
+                        finish() // Close the login activity
 
                     }
 
                 } else {
+
+                    // Show login failure message
 
                     Toast.makeText(this@LoginActivity, "Login failed: ${response.message()}", Toast.LENGTH_SHORT).show()
 
@@ -90,6 +109,8 @@ class LoginActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<LoginResDto>, t: Throwable) {
+
+                // Handle network or request failure
 
                 Toast.makeText(this@LoginActivity, "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
 

@@ -39,7 +39,12 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+
         </activity>
+        <activity android:name=".NotificationsActivity" />
+        <activity android:name=".FavoritesActivity" />
+        <activity android:name=".AccountActivity" />
+        <activity android:name=".SearchActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="false">
