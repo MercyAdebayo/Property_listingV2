@@ -3,6 +3,7 @@ package com.example.homefinder
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -14,6 +15,9 @@ class SignupActivity : AppCompatActivity() {
 
     // Declare UI elements
     private lateinit var usernameInput: EditText
+    private lateinit var fullNameInput: EditText
+    private lateinit var emailInput: EditText
+    private lateinit var mobileInput: EditText
     private lateinit var passwordInput: EditText
     private lateinit var signupButton: Button
 
@@ -21,53 +25,50 @@ class SignupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
-        // Find views by ID (binding UI elements to variables)
+        // Find views by ID
         usernameInput = findViewById(R.id.input_username)
+        fullNameInput = findViewById(R.id.input_fullname)
+        emailInput = findViewById(R.id.input_email)
+        mobileInput = findViewById(R.id.input_mobile)
         passwordInput = findViewById(R.id.input_password)
         signupButton = findViewById(R.id.button_signup)
 
         // Set signup button click listener
         signupButton.setOnClickListener {
-            // Get the input values for username and password
             val username = usernameInput.text.toString().trim()
+            val fullName = fullNameInput.text.toString().trim()
+            val email = emailInput.text.toString().trim()
+            val mobile = mobileInput.text.toString().trim()
             val password = passwordInput.text.toString().trim()
 
-            // Ensure inputs are not empty before making the signup request
-            if (username.isNotEmpty() && password.isNotEmpty()) {
+            // Validate inputs
+            if (username.isNotEmpty() && fullName.isNotEmpty() && email.isNotEmpty() && mobile.isNotEmpty() && password.isNotEmpty()) {
                 // Call the signup API using Retrofit
-                signupUser(username, password)
+                signupUser(username, fullName, email, mobile, password)
             } else {
-                // Display a message if the inputs are invalid
-                Toast.makeText(this, "Please enter a valid username and password", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     // Function to sign up the user via the API
-    private fun signupUser(username: String, password: String) {
-        // Use the RetrofitInstance to access the authService
-        val signupRequest = LoginReqDto(username, password)
+    private fun signupUser(username: String, fullName: String, email: String, mobile: String, password: String) {
+        val signupRequest = RegisterRequest(username, fullName, mobile, email, password)
 
-        // Make the asynchronous network call using authService
         RetrofitInstance.authService.signupUser(signupRequest).enqueue(object : Callback<SignupResponse> {
-
-            // Handle the response (this is called if the request is successful, even if the server returns an error)
             override fun onResponse(call: Call<SignupResponse>, response: Response<SignupResponse>) {
                 if (response.isSuccessful) {
-                    // Signup succeeded
                     Toast.makeText(this@SignupActivity, "Signup successful!", Toast.LENGTH_SHORT).show()
-
                     startActivity(Intent(this@SignupActivity, MainActivity::class.java))
                     finish()
                 } else {
-                    // Signup failed but the server responded (e.g., validation error)
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("SignupError", "Error Response: $errorBody")
                     Toast.makeText(this@SignupActivity, "Signup failed: ${response.message()}", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            // Handle failure (this is called if there is a network failure or an unexpected error)
             override fun onFailure(call: Call<SignupResponse>, t: Throwable) {
-                // Handle network error or other issues
                 Toast.makeText(this@SignupActivity, "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })

@@ -13,7 +13,7 @@ interface AuthService {
 
     @POST("/api/Account/register")
 
-    fun signupUser(@Body signupRequest: LoginReqDto): Call<SignupResponse>
+    fun signupUser(@Body signupRequest: RegisterRequest): Call<SignupResponse>
 
 
 }

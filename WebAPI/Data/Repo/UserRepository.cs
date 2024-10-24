@@ -44,23 +44,33 @@ namespace WebAPI.Data.Repo
             }            
         }
 
-        public void Register(string userName, string password)
+
+        public async Task Register(string userName, string password, string fullName, string email, string mobile)
         {
             byte[] passwordHash, passwordKey;
 
+            // Use HMACSHA512 to hash the password
             using (var hmac = new HMACSHA512())
             {
-                passwordKey = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-
+                passwordKey = hmac.Key; 
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password)); 
             }
 
-            User user = new User();
-            user.Username = userName;
-            user.Password = passwordHash;
-            user.PasswordKey = passwordKey;
+            // Create a new user object and populate it with the provided data
+            User user = new User
+            {
+                Username = userName,
+                Password = passwordHash, 
+                PasswordKey = passwordKey, 
+                FullName = fullName,
+                Email = email,
+                Mobile = mobile,
+                LastUpdatedOn = DateTime.Now
+            };
 
-            dc.Users.Add(user);
+            // Asynchronously save the user to the database
+            await dc.Users.AddAsync(user);
+            await dc.SaveChangesAsync(); 
         }
 
         public async Task<bool> UserAlreadyExists(string userName)

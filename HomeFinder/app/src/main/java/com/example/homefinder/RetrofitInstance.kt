@@ -1,13 +1,17 @@
 package com.example.homefinder
 
-
+import com.google.gson.GsonBuilder
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
 
     private const val BASE_URL = "http://10.0.2.2:5000/"
+
+    private val gson = GsonBuilder().setLenient().create()
+
+    private val client = OkHttpClient.Builder().build()
 
     private val retrofit: Retrofit by lazy {
 

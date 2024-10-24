@@ -123,22 +123,17 @@ class MainActivity : AppCompatActivity() {
         RetrofitInstance.propertyApiService.getPropertyList(1).enqueue(object : Callback<List<PropertyListDto>> {
 
             override fun onResponse(call: Call<List<PropertyListDto>>, response: Response<List<PropertyListDto>>) {
-
                 if (response.isSuccessful) {
-
                     homeList = response.body() ?: emptyList()
-
                     homeAdapter = HomeAdapter(homeList)
-
-                    binding.recyclerView.adapter = homeAdapter // Use binding to reference RecyclerView
-
+                    binding.recyclerView.adapter = homeAdapter
                 } else {
-
-                    Toast.makeText(this@MainActivity, "Failed to load properties", Toast.LENGTH_SHORT).show()
-
+                    // Log more information about the error
+                    Log.e("MainActivity", "Error loading properties: ${response.code()} - ${response.errorBody()?.string()}")
+                    Toast.makeText(this@MainActivity, "Failed to load properties. Code: ${response.code()}", Toast.LENGTH_SHORT).show()
                 }
-
             }
+
 
             override fun onFailure(call: Call<List<PropertyListDto>>, t: Throwable) {
 

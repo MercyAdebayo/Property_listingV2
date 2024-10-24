@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -47,45 +48,51 @@ namespace WebAPI.Controllers
         }
 
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register(LoginReqDto loginReq)
-    {
-        ApiError apiError = new ApiError();
+        // api/account/register
+   
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterDto registerDto)
+        {
+            ApiError apiError = new ApiError();
 
-        // Validate that username and password are not blank
-        if(string.IsNullOrWhiteSpace(loginReq.UserName) || string.IsNullOrWhiteSpace(loginReq.Password)) {
-            apiError.ErrorCode = BadRequest().StatusCode;
-            apiError.ErrorMessage = "Username or password cannot be blank";                    
-            return BadRequest(apiError);
+            try
+            {
+                // Ensure all fields are present
+                if (string.IsNullOrWhiteSpace(registerDto.UserName) || 
+                    string.IsNullOrWhiteSpace(registerDto.Password) ||
+                    string.IsNullOrWhiteSpace(registerDto.Email) ||
+                    string.IsNullOrWhiteSpace(registerDto.FullName) ||
+                    string.IsNullOrWhiteSpace(registerDto.Mobile))
+                {
+                    apiError.ErrorCode = BadRequest().StatusCode;
+                    apiError.ErrorMessage = "All fields must be filled";
+                    return BadRequest(apiError);
+                }
+
+                // Check if the user already exists
+                if (await uow.UserRepository.UserAlreadyExists(registerDto.UserName))
+                {
+                    apiError.ErrorCode = BadRequest().StatusCode;
+                    apiError.ErrorMessage = "User already exists, please try a different username or email";
+                    return BadRequest(apiError);
+                }
+
+                // Register the user
+                await uow.UserRepository.Register(registerDto.UserName, registerDto.Password, registerDto.FullName, registerDto.Email, registerDto.Mobile);
+
+                // Return a success response
+                return StatusCode(201, "Registration successful.");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (use a proper logging system in production)
+                Console.WriteLine(ex.Message);
+                apiError.ErrorCode = StatusCodes.Status500InternalServerError;
+                apiError.ErrorMessage = "An internal server error occurred during registration.";
+                return StatusCode(StatusCodes.Status500InternalServerError, apiError);
+            }
         }
 
-        // Check if the user already exists
-        if (await uow.UserRepository.UserAlreadyExists(loginReq.UserName)) {
-            apiError.ErrorCode = BadRequest().StatusCode;
-            apiError.ErrorMessage = "User already exists, please try a different username";
-            return BadRequest(apiError);
-        }                
-
-        // Register the new user
-        uow.UserRepository.Register(loginReq.UserName, loginReq.Password);
-        await uow.SaveAsync();
-
-        // Authenticate the newly registered user and return a JWT token
-        var user = await uow.UserRepository.Authenticate(loginReq.UserName, loginReq.Password);
-        if (user == null) {
-            apiError.ErrorCode = Unauthorized().StatusCode;
-            apiError.ErrorMessage = "There was an error during registration. Please try again.";
-            return Unauthorized(apiError);
-        }
-
-        // Create JWT token for the newly registered user
-        var loginRes = new LoginResDto();
-        loginRes.UserName = user.Username;
-        loginRes.Token = CreateJWT(user);
-
-        
-        return Ok(loginRes);
-    }
 
 
         private string CreateJWT(User user)
