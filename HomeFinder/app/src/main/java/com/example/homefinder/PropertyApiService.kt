@@ -19,4 +19,8 @@ interface PropertyApiService {
 
     @GET("api/property/search")
     fun searchProperties(@Query("query") query: String): Call<List<PropertyListDto>>
+
+    @GET("api/property/detail/{id}")
+    fun getPropertyDetail(@Path("id") id: Int): Call<PropertyDto>
+
 }

@@ -10,5 +10,7 @@ namespace WebAPI.Interfaces
         Task Register(string userName, string password, string fullName, string email, string mobile);
 
         Task<bool> UserAlreadyExists(string userName);
+
+        Task<User> GetUserByIdAsync(int userId);
     }
 }

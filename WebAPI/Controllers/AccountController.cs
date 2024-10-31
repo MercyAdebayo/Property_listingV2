@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -93,6 +94,26 @@ namespace WebAPI.Controllers
             }
         }
 
+        [Authorize]
+        [HttpGet("userinfo")]
+        public async Task<IActionResult> GetUserInfo()
+        {
+            var userId = User.GetUserId(); 
+            var user = await uow.UserRepository.GetUserByIdAsync(userId);
+
+            if (user == null) return NotFound();
+
+            var userInfo = new UserInfoDto
+            {
+                UserName = user.Username,
+                FullName = user.FullName,
+                Email = user.Email,
+                Mobile = user.Mobile
+            };
+
+            return Ok(userInfo);
+        }
+
 
 
         private string CreateJWT(User user)
@@ -116,7 +137,7 @@ namespace WebAPI.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(1),
+                Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = signingCredentials
             };
 

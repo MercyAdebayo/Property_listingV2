@@ -28,6 +28,12 @@ namespace WebAPI.Data.Repo
             return user;
         }
 
+         public async Task<User> GetUserByIdAsync(int userId)
+        {
+            return await dc.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        }
+
+
         private bool MatchPasswordHash(string passwordText, byte[] password, byte[] passwordKey)
         {
             using (var hmac = new HMACSHA512(passwordKey))

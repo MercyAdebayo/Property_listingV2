@@ -1,48 +1,31 @@
 package com.example.homefinder
 
-data class PropertyDetailDto(
 
+
+data class PropertyDto(
     val id: Int,
-
     val sellRent: Int,
-
     val name: String,
-
-    val propertyType: String,
-
-    val furnishingType: String,
-
-    val price: Int,
-
+    val propertyTypeId: Int,
     val bhk: Int,
-
+    val furnishingTypeId: Int,
+    val price: Int,
     val builtArea: Int,
-
     val carpetArea: Int,
-
-    val city: String,
-
     val address: String,
-
-    val address2: String,
-
+    val address2: String?,
+    val cityId: Int,
+    val cityName: String,
+    val country: String,
     val floorNo: Int,
-
     val totalFloors: Int,
-
+    val readyToMove: Boolean,
     val mainEntrance: String,
-
     val security: Int,
-
     val gated: Boolean,
-
     val maintenance: Int,
-
+    val estPossessionOn: String?,
     val age: Int,
-
     val description: String,
-
     val photos: List<PhotoDto>
-
 )
-

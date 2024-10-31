@@ -10,7 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
 
-class HomeAdapter(private val homeList: List<PropertyListDto>) :
+class HomeAdapter(private val homeList: List<PropertyListDto>,
+                  private val onPropertyClick: (PropertyListDto) -> Unit) :
     RecyclerView.Adapter<HomeAdapter.HomeViewHolder>() {
 
     class HomeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -41,6 +42,11 @@ class HomeAdapter(private val homeList: List<PropertyListDto>) :
             .load(currentItem.photo)
             .placeholder(R.drawable.placeholder)
             .into(holder.imageView)
+
+        // Set the click listener
+        holder.itemView.setOnClickListener {
+            onPropertyClick(currentItem)
+        }
     }
 
     override fun getItemCount(): Int {

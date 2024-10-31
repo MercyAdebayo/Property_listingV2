@@ -5,6 +5,7 @@
 
 
     <application
+        android:name=".HomeFinderApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -46,6 +47,7 @@
         <activity android:name=".FavoritesActivity" />
         <activity android:name=".AccountActivity" />
         <activity android:name=".SearchActivity" />
+        <activity android:name=".PropertyDetailActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="false">

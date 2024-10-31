@@ -82,7 +82,11 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call<List<PropertyListDto>>, response: Response<List<PropertyListDto>>) {
                 if (response.isSuccessful) {
                     homeList = response.body() ?: emptyList()
-                    homeAdapter = HomeAdapter(homeList)
+                    homeAdapter = HomeAdapter(homeList){ selectedProperty ->
+                        val intent = Intent(this@MainActivity, PropertyDetailActivity::class.java)
+                        intent.putExtra("PROPERTY_ID", selectedProperty.id)
+                        startActivity(intent)
+                    }
                     binding.recyclerView.adapter = homeAdapter
                 } else {
                     Log.e("MainActivity", "Error loading properties: ${response.code()} - ${response.errorBody()?.string()}")
