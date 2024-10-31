@@ -1,5 +1,6 @@
 package com.example.homefinder
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,8 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.example.homefinder.R
+
 
 class HomeAdapter(private val homeList: List<PropertyListDto>) :
     RecyclerView.Adapter<HomeAdapter.HomeViewHolder>() {
@@ -29,6 +29,7 @@ class HomeAdapter(private val homeList: List<PropertyListDto>) :
 
     override fun onBindViewHolder(holder: HomeViewHolder, position: Int) {
         val currentItem = homeList[position]
+        Log.d("HomeAdapter", "Binding item at position $position: ${currentItem.name}")
 
         holder.priceText.text = "$${currentItem.price}"
         holder.cashbackText.text = "Up to ${currentItem.price * 0.01} Cashback"
@@ -42,5 +43,9 @@ class HomeAdapter(private val homeList: List<PropertyListDto>) :
             .into(holder.imageView)
     }
 
-    override fun getItemCount() = homeList.size
+    override fun getItemCount(): Int {
+        Log.d("HomeAdapter", "Displaying ${homeList.size} items")
+        return homeList.size
+    }
+
 }

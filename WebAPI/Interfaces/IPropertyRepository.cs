@@ -6,7 +6,7 @@ namespace WebAPI.Interfaces
 {
     public interface IPropertyRepository
     {
-        Task<IEnumerable<Property>> GetPropertiesAsync(int sellRent);
+        Task<IEnumerable<Property>> GetPropertiesAsync(int? sellRent, int? cityId = null, string sortBy = null);
         Task<Property> GetPropertyDetailAsync(int id);
         Task<Property> GetPropertyByIdAsync(int id);
         void AddProperty(Property property);

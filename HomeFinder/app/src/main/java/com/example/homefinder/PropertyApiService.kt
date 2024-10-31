@@ -6,10 +6,17 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface PropertyApiService {
-    // Fetch property list (e.g., 1 = sell, 2 = rent)
-    @GET("/api/property/list/{sellRent}")
-    fun getPropertyList(@Path("sellRent") sellRent: Int): Call<List<PropertyListDto>>
-    @GET("property/search")
+    // Fetch properties with an optional filters
+    @GET("api/property/list")
+    fun getPropertyList(@Query("sellRent") sellRent: Int? = null,
+                        @Query("cityId") cityId: Int? = null,
+                        @Query("sortBy") sortBy: String? = null
+    ): Call<List<PropertyListDto>>
+
+    @GET("api/City/cities")
+    fun getCities(): Call<List<City>>
+
+
+    @GET("api/property/search")
     fun searchProperties(@Query("query") query: String): Call<List<PropertyListDto>>
 }
-
