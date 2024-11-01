@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace WebAPI.Models
 {
@@ -10,6 +10,7 @@ namespace WebAPI.Models
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Mobile { get; set; } 
+        public ICollection<Favorite> Favorites { get; set; }
     }
    
 }

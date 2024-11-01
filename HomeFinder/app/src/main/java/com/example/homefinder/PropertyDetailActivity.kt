@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import retrofit2.Call
@@ -33,6 +34,7 @@ class PropertyDetailActivity : AppCompatActivity() {
     private lateinit var commentInput: EditText
     private lateinit var buttonAddComment: Button
     private var isFavorite = false
+    private lateinit var viewModel: FavoritesViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +64,10 @@ class PropertyDetailActivity : AppCompatActivity() {
         commentInput = findViewById(R.id.commentInput)
         buttonAddComment = findViewById(R.id.buttonAddComment)
 
+        // Initialize ViewModel
+        viewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application))
+            .get(FavoritesViewModel::class.java)
+
         // Fetch property ID from intent
         val propertyId = intent.getIntExtra("PROPERTY_ID", -1)
         if (propertyId == -1) {
@@ -69,9 +75,23 @@ class PropertyDetailActivity : AppCompatActivity() {
             finish()
             return
         }
+
+        // Observe the favorite action result and update UI accordingly
+        viewModel.favoriteActionResult.observe(this) { result ->
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
+        }
+
         // Favorite button toggle
+        // Toggle favorite button
         fabFavorite.setOnClickListener {
-            toggleFavorite()
+            if (isFavorite) {
+                viewModel.removeFavorite(propertyId)
+                isFavorite = false
+            } else {
+                viewModel.addFavorite(propertyId)
+                isFavorite = true
+            }
+            updateFavoriteIcon()
         }
 
         // Add comment functionality
@@ -109,8 +129,7 @@ class PropertyDetailActivity : AppCompatActivity() {
         })
     }
 
-    private fun toggleFavorite() {
-        isFavorite = !isFavorite
+    private fun updateFavoriteIcon() {
         val icon = if (isFavorite) R.drawable.ic_favorite else R.drawable.ic_favorite_border
         fabFavorite.setImageResource(icon)
         Toast.makeText(this, if (isFavorite) "Added to favorites" else "Removed from favorites", Toast.LENGTH_SHORT).show()

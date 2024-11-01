@@ -14,6 +14,11 @@ namespace WebAPI.Interfaces
 
          IPropertyTypeRepository PropertyTypeRepository {get; }
 
+         IFavoriteRepository FavoriteRepository { get; }
+
          Task<bool> SaveAsync();
+
+         Task<bool> Complete();
+        bool HasChanges();
     }
 }

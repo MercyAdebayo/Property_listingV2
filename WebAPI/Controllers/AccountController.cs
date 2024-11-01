@@ -114,6 +114,73 @@ namespace WebAPI.Controllers
             return Ok(userInfo);
         }
 
+        [HttpPost("add-favorite/{propertyId}")]
+        public async Task<IActionResult> AddFavorite(int propertyId)
+        {
+            var userId = User.GetUserId();
+            var existingFavorite = await uow.FavoriteRepository.GetFavorite(userId, propertyId);
+
+            if (existingFavorite != null)
+            {
+                return BadRequest("Property is already in favorites.");
+            }
+
+            var favorite = new Favorite
+            {
+                UserId = userId,
+                PropertyId = propertyId
+            };
+
+            await uow.FavoriteRepository.AddFavorite(favorite);
+            if (await uow.Complete())
+            {
+                return Ok("Property added to favorites.");
+            }
+
+            return BadRequest("Failed to add property to favorites.");
+        }
+
+        [HttpDelete("remove-favorite/{propertyId}")]
+        public async Task<IActionResult> RemoveFavorite(int propertyId)
+        {
+            var userId = User.GetUserId();
+            var favorite = await uow.FavoriteRepository.GetFavorite(userId, propertyId);
+
+            if (favorite == null)
+            {
+                return NotFound("Property is not in favorites.");
+            }
+
+            await uow.FavoriteRepository.RemoveFavorite(favorite);
+            if (await uow.Complete())
+            {
+                return Ok("Property removed from favorites.");
+            }
+
+            return BadRequest("Failed to remove property from favorites.");
+        }
+
+        [HttpGet("is-favorite/{propertyId}")]
+        public async Task<IActionResult> IsFavorite(int propertyId)
+        {
+            var userId = User.GetUserId();
+            var favorite = await uow.FavoriteRepository.GetFavorite(userId, propertyId);
+
+            return Ok(favorite != null);
+        }
+
+        [HttpGet("favorites")]
+        public async Task<IActionResult> GetUserFavorites()
+        {
+            var userId = User.GetUserId();
+            var favorites = await uow.FavoriteRepository.GetUserFavorites(userId);
+
+            return Ok(favorites);
+        }
+
+       
+
+
 
 
         private string CreateJWT(User user)

@@ -24,12 +24,24 @@ namespace WebAPI.Data
         public IPropertyTypeRepository PropertyTypeRepository =>         
             new PropertyTypeRepository(dc);
 
+        public IFavoriteRepository FavoriteRepository => 
+            new FavoriteRepository(dc); 
         public IPropertyRepository PropertyRepository => 
             new PropertyRepository(dc);
 
         public async Task<bool> SaveAsync()
         {
            return await dc.SaveChangesAsync() > 0;
+        }
+
+         public async Task<bool> Complete()
+        {
+            return await dc.SaveChangesAsync() > 0;
+        }
+
+        public bool HasChanges()
+        {
+            return dc.ChangeTracker.HasChanges();
         }
     }
 }

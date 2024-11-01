@@ -18,17 +18,19 @@
             android:src="@drawable/placeholder" />
 
         <!-- Favorite Button -->
+
+        <!-- Property Title -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_favorite"
-            android:layout_width="41dp"
+            android:layout_width="267dp"
             android:layout_height="37dp"
             android:layout_gravity="end"
             android:layout_margin="5dp"
             android:contentDescription="Add to Favorites"
             android:src="@drawable/ic_favorite_border"
-            android:tint="@android:color/white" />
+            android:backgroundTint="@android:color/white"
+            />
 
-        <!-- Property Title -->
         <TextView
             android:id="@+id/text_name"
             android:layout_width="wrap_content"
