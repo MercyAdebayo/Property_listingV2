@@ -5,7 +5,7 @@
 
 
     <application
-        android:name=".HomeFinderApplication"
+        android:name=".application.HomeFinderApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -17,21 +17,21 @@
         android:theme="@style/Theme.HomeFinder"
         tools:targetApi="31">
         <activity
-            android:name=".SignupActivity"
+            android:name=".ui.SignupActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.LoginActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".ui.WelcomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,13 +43,13 @@
                 android:value="" />
 
         </activity>
-        <activity android:name=".NotificationsActivity" />
-        <activity android:name=".FavoritesActivity" />
-        <activity android:name=".AccountActivity" />
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".PropertyDetailActivity" />
+        <activity android:name=".ui.NotificationsActivity" />
+        <activity android:name=".ui.FavoritesActivity" />
+        <activity android:name=".ui.AccountActivity" />
+        <activity android:name=".ui.SearchActivity" />
+        <activity android:name=".ui.PropertyDetailActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="false">
 
 

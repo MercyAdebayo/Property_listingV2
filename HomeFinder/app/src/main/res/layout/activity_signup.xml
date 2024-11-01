@@ -32,7 +32,8 @@
         android:id="@+id/input_mobile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Mobile" />
+        android:hint="Mobile"
+        android:inputType="number"/>
 
     <!-- Password -->
     <EditText

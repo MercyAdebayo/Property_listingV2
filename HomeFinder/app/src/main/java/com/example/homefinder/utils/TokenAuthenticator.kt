@@ -6,7 +6,7 @@ import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
-import com.example.homefinder.LoginActivity
+import com.example.homefinder.ui.LoginActivity
 
 class TokenAuthenticator(private val appContext: Context) : Authenticator {
     override fun authenticate(route: Route?, response: Response): Request? {
