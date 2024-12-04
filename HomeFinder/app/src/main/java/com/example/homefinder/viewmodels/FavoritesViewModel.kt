@@ -93,4 +93,32 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
             _favoriteActionResult.value = "User not authenticated. Please log in."
         }
     }
+
+    // Function to check if a property is in favorites
+    fun isPropertyInFavorites(propertyId: Int, callback: (Boolean) -> Unit) {
+        val token = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE).getString("TOKEN", null)
+
+        if (token != null) {
+            // Make a network call to fetch the favorites
+            RetrofitInstance.authService.getUserFavorites("Bearer $token").enqueue(object : Callback<List<FavoriteDto>> {
+                override fun onResponse(call: Call<List<FavoriteDto>>, response: Response<List<FavoriteDto>>) {
+                    if (response.isSuccessful) {
+                        val favorites = response.body() ?: emptyList()
+                        // Check if the property exists in the fetched list
+                        val isInFavorites = favorites.any { it.propertyId == propertyId }
+                        callback(isInFavorites)
+                    } else {
+                        callback(false) // API call failed
+                    }
+                }
+
+                override fun onFailure(call: Call<List<FavoriteDto>>, t: Throwable) {
+                    callback(false) // Network error
+                }
+            })
+        } else {
+            callback(false) // User not authenticated
+        }
+    }
+
 }

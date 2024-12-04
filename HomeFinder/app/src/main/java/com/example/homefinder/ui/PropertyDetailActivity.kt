@@ -37,7 +37,7 @@ class PropertyDetailActivity : AppCompatActivity() {
     private lateinit var commentsContainer: LinearLayout
     private lateinit var commentInput: EditText
     private lateinit var buttonAddComment: Button
-    private var isFavorite = false
+//    private var isFavorite = false
     private lateinit var viewModel: FavoritesViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,22 +80,32 @@ class PropertyDetailActivity : AppCompatActivity() {
             return
         }
 
+        viewModel.isPropertyInFavorites(propertyId) { isInFavorites ->
+
+            val icon = if (isInFavorites) R.drawable.ic_favorite else R.drawable.ic_favorite_border
+            fabFavorite.setImageResource(icon)
+        }
+
+
         // Observe the favorite action result and update UI accordingly
         viewModel.favoriteActionResult.observe(this) { result ->
             Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
         }
 
         // Favorite button toggle
-        // Toggle favorite button
+
         fabFavorite.setOnClickListener {
-            if (isFavorite) {
-                viewModel.removeFavorite(propertyId)
-                isFavorite = false
-            } else {
-                viewModel.addFavorite(propertyId)
-                isFavorite = true
+
+            viewModel.isPropertyInFavorites(propertyId) { isInFavorites ->
+                if (isInFavorites) {
+                    viewModel.removeFavorite(propertyId)
+                    println("Property is in favorites.")
+                } else {
+                    viewModel.addFavorite(propertyId)
+                    println("Property is not in favorites.")
+                }
+                updateFavoriteIcon(isInFavorites)
             }
-            updateFavoriteIcon()
         }
 
         // Add comment functionality
@@ -133,10 +143,11 @@ class PropertyDetailActivity : AppCompatActivity() {
         })
     }
 
-    private fun updateFavoriteIcon() {
-        val icon = if (isFavorite) R.drawable.ic_favorite else R.drawable.ic_favorite_border
+    private fun updateFavoriteIcon(isFavorite: Boolean) {
+       // var isFavorite = viewModel.isPropertyInFavorites(propertyId)
+        val icon = if (!isFavorite) R.drawable.ic_favorite else R.drawable.ic_favorite_border
         fabFavorite.setImageResource(icon)
-        Toast.makeText(this, if (isFavorite) "Added to favorites" else "Removed from favorites", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, if (isFavorite) "Removed from favorites" else "Added to favorites", Toast.LENGTH_SHORT).show()
 
     }
 

@@ -26,15 +26,6 @@ namespace WebAPI.Controllers
             this.mapper = mapper;
         }
 
-        //property/list
-        // [HttpGet("list")]
-        // [AllowAnonymous]
-        // public async Task<IActionResult> GetPropertyList(int? sellRent = null)
-        // {
-        //     var properties = await uow.PropertyRepository.GetPropertiesAsync(sellRent);
-        //     var propertyListDTO = mapper.Map<IEnumerable<PropertyListDto>>(properties);
-        //     return Ok(propertyListDTO);
-        // }
 
         [HttpGet("list")]
         [AllowAnonymous]
