@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -5,9 +6,11 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebAPI.Dtos;
 using WebAPI.Interfaces;
 using WebAPI.Models;
+using WebAPI.Data;
 
 namespace WebAPI.Controllers
 {
@@ -16,14 +19,14 @@ namespace WebAPI.Controllers
         private readonly IUnitOfWork uow;
         private readonly IMapper mapper;
         private readonly IPhotoService photoService;
+        private readonly DataContext _context;
 
-        public PropertyController(IUnitOfWork uow,
-        IMapper mapper,
-        IPhotoService photoService)
+        public PropertyController(IUnitOfWork uow, IMapper mapper, IPhotoService photoService, DataContext context)
         {
             this.photoService = photoService;
             this.uow = uow;
             this.mapper = mapper;
+            this._context = context; 
         }
 
 
@@ -159,6 +162,85 @@ namespace WebAPI.Controllers
 
             return BadRequest("Failed to delete photo");
         }
+
+        // 
+        [HttpGet("comments/{propertyId}")]
+        public async Task<IActionResult> GetComments(int propertyId)
+        {
+            var comments = await _context.Comments
+                .Where(c => c.PropertyId == propertyId)
+                .Include(c => c.User) 
+                .OrderBy(c => c.CreatedAt)
+                .ToListAsync();
+
+            var commentDtos = comments.Select(c => new CommentDto
+            {
+                Text = c.Text,
+                UserName = c.User.Username,
+                CreatedAt = c.CreatedAt
+            }).ToList();
+
+            return Ok(commentDtos);
+        }
+
+        // Add a comment to a property
+        [HttpPost("add-comment/{propertyId}")]
+        [Authorize]
+        public async Task<IActionResult> AddComment(int propertyId, [FromBody] CommentDto commentDto)
+        {
+            if (string.IsNullOrEmpty(commentDto.Text))
+            {
+                Console.WriteLine("Comment text is empty.");
+                return BadRequest("Comment cannot be empty.");
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == commentDto.UserName);
+            if (user == null)
+            {
+                Console.WriteLine($"User not found for username: {commentDto.UserName}");
+                return NotFound("User not found.");
+            }
+
+            var property = await uow.PropertyRepository.GetPropertyByIdAsync(propertyId);
+            if (property == null)
+            {
+                Console.WriteLine($"Property not found for ID: {propertyId}");
+                return NotFound("Property not found.");
+            }
+
+            var comment = new Comment
+            {
+                Text = commentDto.Text,
+                PropertyId = propertyId,
+                UserId = user.Id,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Comments.Add(comment);
+
+            try
+            {
+                if (await _context.SaveChangesAsync() > 0)
+                {
+                    Console.WriteLine("Comment added successfully.");
+                    return Ok(new CommentDto
+                    {
+                        Text = comment.Text,
+                        UserName = user.Username,
+                        CreatedAt = comment.CreatedAt
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving comment: {ex.Message}");
+            }
+
+            Console.WriteLine("Failed to add comment.");
+            return BadRequest("Failed to add comment.");
+        }
+
+
 
 
 

@@ -17,7 +17,6 @@
             android:scaleType="centerCrop"
             android:src="@drawable/placeholder" />
 
-        <!-- Favorite Button -->
 
         <!-- Property Title -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -207,21 +206,12 @@
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
 
-        <!-- List of Comments -->
-        <LinearLayout
-            android:id="@+id/commentsContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-        </LinearLayout>
-
         <!-- Add Comment Section -->
         <EditText
             android:id="@+id/commentInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint=" Write a comment"
+            android:hint="Write a comment"
             android:padding="8dp"
             android:textColor="#000000"
             android:textColorHint="#888888"
@@ -233,6 +223,24 @@
             android:layout_height="wrap_content"
             android:text="Post Comment"
             android:layout_marginTop="8dp" />
+        <!-- Comments Section -->
+
+        <!-- List of Comments -->
+        <LinearLayout
+            android:id="@+id/commentsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+        <!-- RecyclerView for Comments -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView_comments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical" />
+
 
     </LinearLayout>
 </ScrollView>

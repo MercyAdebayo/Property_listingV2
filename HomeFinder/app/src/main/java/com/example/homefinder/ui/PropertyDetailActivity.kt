@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.homefinder.model.PropertyDto
 import com.example.homefinder.R
+import com.example.homefinder.model.CommentDto
 import com.example.homefinder.utils.RetrofitInstance
 import com.example.homefinder.viewmodels.FavoritesViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -37,7 +38,6 @@ class PropertyDetailActivity : AppCompatActivity() {
     private lateinit var commentsContainer: LinearLayout
     private lateinit var commentInput: EditText
     private lateinit var buttonAddComment: Button
-//    private var isFavorite = false
     private lateinit var viewModel: FavoritesViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,16 +108,88 @@ class PropertyDetailActivity : AppCompatActivity() {
             }
         }
 
-        // Add comment functionality
+        // Fetch comments when the activity starts
+        RetrofitInstance.propertyApiService.getComments(propertyId).enqueue(object : Callback<List<CommentDto>> {
+            override fun onResponse(call: Call<List<CommentDto>>, response: Response<List<CommentDto>>) {
+                if (response.isSuccessful) {
+                    val comments = response.body()
+                    if (comments != null) {
+                        // Display comments in UI
+                        commentsContainer.removeAllViews() // Clear any existing comments
+                        for (comment in comments) {
+                            // Create a comment text that includes the username
+                            val commentWithUserName = "${comment.text} - ${comment.userName} "
+
+                            // Dynamically add a TextView for each new comment
+                            val commentView = TextView(this@PropertyDetailActivity).apply {
+                                text = commentWithUserName
+                                textSize = 16f
+                                setPadding(8, 8, 8, 8)
+                            }
+                            commentsContainer.addView(commentView)
+                        }
+                    }
+                } else {
+                    Toast.makeText(this@PropertyDetailActivity, "Failed to load comments", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<CommentDto>>, t: Throwable) {
+                Toast.makeText(this@PropertyDetailActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        // Add comment when button is clicked
+
         buttonAddComment.setOnClickListener {
             val commentText = commentInput.text.toString().trim()
             if (commentText.isNotEmpty()) {
-                addComment(commentText)
-                commentInput.text.clear()  // Clear the input field after adding comment
-            } else {
-                Toast.makeText(this, "Please enter a comment", Toast.LENGTH_SHORT).show()
+                val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
+                val userName = sharedPreferences.getString("USERNAME", null)
+                val token = sharedPreferences.getString("TOKEN", null) // Fetch the token
+
+                Log.d("LoginStatus", "User Name: $userName")
+
+                if (userName != null && token != null) { // Check if both username and token are available
+                    // Get the current timestamp
+                    val createdAt = convertTimestampToDateTime(System.currentTimeMillis())
+
+                    // Create the CommentDto using username and other data
+                    val commentDto = CommentDto(
+                        text = commentText,
+                        userName = userName,
+                        createdAt = createdAt
+                    )
+                    Log.d("CommentPayload", "Text: $commentText, UserName: $userName, PropertyId: $propertyId")
+
+                    // Add the Authorization header with the Bearer token
+                    val authHeader = "Bearer $token"
+
+                    // Make the API call with the Authorization header
+                    RetrofitInstance.propertyApiService.addComment(propertyId, commentDto, authHeader).enqueue(object : Callback<CommentDto> {
+                        override fun onResponse(call: Call<CommentDto>, response: Response<CommentDto>) {
+                            if (response.isSuccessful) {
+                                addComment(commentText)
+
+                                // Clear the comment input field after posting the comment
+                                commentInput.text.clear()
+                            } else {
+                                Log.e("AddComment", "Failed with code: ${response.code()}, message: ${response.message()}, body: ${response.errorBody()?.string()}")
+                                Toast.makeText(this@PropertyDetailActivity, "Failed to add comment.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
+                        override fun onFailure(call: Call<CommentDto>, t: Throwable) {
+                            Toast.makeText(this@PropertyDetailActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    })
+                } else {
+                    Toast.makeText(this, "User not logged in or token is missing.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
+
+
 
         // Fetch property details
         fetchPropertyDetails(propertyId)
@@ -133,6 +205,7 @@ class PropertyDetailActivity : AppCompatActivity() {
                         displayPropertyDetails(property)
                     }
                 } else {
+
                     Toast.makeText(this@PropertyDetailActivity, "Failed to load property details", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -198,6 +271,12 @@ class PropertyDetailActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
         val token = sharedPreferences.getString("TOKEN", null)
         return !token.isNullOrEmpty()
+    }
+    // Function to convert timestamp to ISO 8601 format
+    fun convertTimestampToDateTime(timestamp: Long): String {
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.getDefault())
+        sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
+        return sdf.format(java.util.Date(timestamp))
     }
 
 }
