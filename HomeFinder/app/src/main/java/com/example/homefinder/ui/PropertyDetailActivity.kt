@@ -148,7 +148,7 @@ class PropertyDetailActivity : AppCompatActivity() {
                 val userName = sharedPreferences.getString("USERNAME", null)
                 val token = sharedPreferences.getString("TOKEN", null) // Fetch the token
 
-                Log.d("LoginStatus", "User Name: $userName")
+
 
                 if (userName != null && token != null) { // Check if both username and token are available
                     // Get the current timestamp
@@ -160,7 +160,7 @@ class PropertyDetailActivity : AppCompatActivity() {
                         userName = userName,
                         createdAt = createdAt
                     )
-                    Log.d("CommentPayload", "Text: $commentText, UserName: $userName, PropertyId: $propertyId")
+
 
                     // Add the Authorization header with the Bearer token
                     val authHeader = "Bearer $token"
@@ -174,7 +174,7 @@ class PropertyDetailActivity : AppCompatActivity() {
                                 // Clear the comment input field after posting the comment
                                 commentInput.text.clear()
                             } else {
-                                Log.e("AddComment", "Failed with code: ${response.code()}, message: ${response.message()}, body: ${response.errorBody()?.string()}")
+
                                 Toast.makeText(this@PropertyDetailActivity, "Failed to add comment.", Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -200,7 +200,6 @@ class PropertyDetailActivity : AppCompatActivity() {
             override fun onResponse(call: Call<PropertyDto>, response: Response<PropertyDto>) {
                 if (response.isSuccessful) {
                     val property = response.body()
-                    Log.d("PropertyDetailActivity", "Property response: $property")
                     if (property != null) {
                         displayPropertyDetails(property)
                     }

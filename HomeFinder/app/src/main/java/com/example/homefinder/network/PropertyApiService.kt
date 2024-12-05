@@ -25,7 +25,7 @@ interface PropertyApiService {
 
 
     @GET("api/property/search")
-    fun searchProperties(@Query("query") query: String): Call<List<PropertyListDto>>
+    fun searchProperties(@Query("name") name: String): Call<List<PropertyListDto>>
 
     @GET("api/property/detail/{id}")
     fun getPropertyDetail(@Path("id") id: Int): Call<PropertyDto>
@@ -37,6 +37,7 @@ interface PropertyApiService {
     // Add a comment to a property
     @POST("api/property/add-comment/{propertyId}")
     fun addComment(@Path("propertyId") propertyId: Int, @Body commentDto: CommentDto, @Header("Authorization") token: String): Call<CommentDto>
+
 
 
 }

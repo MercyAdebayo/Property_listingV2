@@ -56,4 +56,6 @@ class HomeAdapter(private val homeList: List<PropertyListDto>,
         return homeList.size
     }
 
+
+
 }

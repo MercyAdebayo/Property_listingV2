@@ -240,7 +240,29 @@ namespace WebAPI.Controllers
             return BadRequest("Failed to add comment.");
         }
 
+        // Search properties by name
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchProperties([FromQuery] string name)
+        {
+            // Check if name is provided
+            if (string.IsNullOrEmpty(name))
+            {
+                return BadRequest("Search query is required.");
+            }
 
+            // Search properties that match the name
+            var properties = await _context.Properties
+                .Where(p => p.Name.ToLower().Contains(name.ToLower()))  
+                .ToListAsync();
+
+            // Check if properties were found
+            if (properties.Any())
+            {
+                return Ok(properties); 
+            }
+            
+            return NotFound(new { message = "No properties found matching the search query." }); 
+        }
 
 
 

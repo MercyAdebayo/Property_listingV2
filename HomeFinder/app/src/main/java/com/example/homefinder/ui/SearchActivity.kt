@@ -32,9 +32,9 @@ class SearchActivity : AppCompatActivity() {
         binding.iconSearch.setOnClickListener {
             val query = binding.inputSearch.text.toString().trim()
             if (query.isNotEmpty()) {
-                searchProperties(query)
+                searchProperties(query)  // Trigger search when the icon is clicked
             } else {
-                Toast.makeText(this, "Please enter a search query", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter property name", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -47,7 +47,12 @@ class SearchActivity : AppCompatActivity() {
                     searchResults = response.body() ?: emptyList()
                     Log.d("SearchActivity", "Search results: $searchResults")
 
-                    // Initialize the adapter with the click listener
+                    // Check if results are empty
+                    if (searchResults.isEmpty()) {
+                        Toast.makeText(this@SearchActivity, "No properties found", Toast.LENGTH_SHORT).show()
+                    }
+
+                    // Initialize the adapter with the search results
                     homeAdapter = HomeAdapter(searchResults) { property ->
                         val intent = Intent(this@SearchActivity, PropertyDetailActivity::class.java)
                         intent.putExtra("PROPERTY_ID", property.id)
@@ -58,7 +63,6 @@ class SearchActivity : AppCompatActivity() {
                         adapter = homeAdapter
                         layoutManager = LinearLayoutManager(this@SearchActivity)
                     }
-
                 } else {
                     Toast.makeText(this@SearchActivity, "No results found", Toast.LENGTH_SHORT).show()
                 }
@@ -70,3 +74,4 @@ class SearchActivity : AppCompatActivity() {
         })
     }
 }
+
